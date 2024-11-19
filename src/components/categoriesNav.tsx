@@ -51,15 +51,17 @@ const CategoriesNav: React.FC<CategoriesNavProps> = ({
     const sectionIndex = categories.findIndex(
       category => category.name === categoryName,
     );
-
+    const categoryNavHeight = 74;
     if (sectionIndex !== -1 && sectionRefs.current) {
       sectionRefs.current.scrollToLocation({
         sectionIndex,
         itemIndex: 0,
         animated: true,
+        viewOffset: categoryNavHeight,
       });
     }
   };
+
   return (
     <View style={styles.container}>
       <ScrollView

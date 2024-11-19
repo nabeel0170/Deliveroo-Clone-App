@@ -1,5 +1,5 @@
-import {Text, StyleSheet, SectionList, View} from 'react-native';
-import React, {useEffect, useRef} from 'react';
+import {Text, StyleSheet, SectionList, View, Animated} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
 import {FoodItem, ItemSectionProps} from '../types/types';
 import MenuItemCard from './itemCard';
 import {useDispatch, useSelector} from 'react-redux';
@@ -17,6 +17,9 @@ const MenuContent: React.FC<ItemSectionProps> = ({categories}) => {
   const menuItems = useSelector(selectMenuItems);
   const dispatch = useDispatch<AppDispatch>();
   const sectionRef = useRef<SectionList>(null);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const [restaurantInfoHeight, setRestaurantInfoHeight] = useState(0);
+
   useEffect(() => {
     if (menuItems.length === 0) {
       dispatch(fetchMenuItems());
@@ -38,15 +41,37 @@ const MenuContent: React.FC<ItemSectionProps> = ({categories}) => {
   );
 
   const renderHeaderComponents = () => (
-    <>
-      <RestaurantInfoSection />
+    <View style={{backgroundColor: 'white'}}>
+      <View
+        onLayout={({nativeEvent}) => {
+          setRestaurantInfoHeight(nativeEvent.layout.height);
+        }}>
+        <RestaurantInfoSection />
+      </View>
       <CategoriesNav categories={categories} sectionRefs={sectionRef} />
       <PopularItemsSection menuItems={menuItems} />
-    </>
+    </View>
   );
+
+  const translateY = scrollY.interpolate({
+    inputRange: [0, restaurantInfoHeight, restaurantInfoHeight],
+    outputRange: [-restaurantInfoHeight, -restaurantInfoHeight, 0],
+    extrapolate: 'clamp',
+  });
+
   return (
-    <View style={styles.sectionListContainer}>
-      <SectionList
+    <View style={styles.Container}>
+      <Animated.View
+        style={[
+          styles.stickyHeaderContainer,
+          {
+            transform: [{translateY}],
+          },
+        ]}>
+        <CategoriesNav categories={categories} sectionRefs={sectionRef} />
+      </Animated.View>
+      <Animated.SectionList
+        style={styles.sectionListContainer}
         ref={sectionRef}
         scrollEnabled={true}
         sections={categories.map(category => ({
@@ -60,6 +85,11 @@ const MenuContent: React.FC<ItemSectionProps> = ({categories}) => {
         )}
         ListFooterComponent={<Footer />}
         ListHeaderComponent={renderHeaderComponents}
+        onScroll={Animated.event(
+          [{nativeEvent: {contentOffset: {y: scrollY}}}],
+          {useNativeDriver: true},
+        )}
+        scrollEventThrottle={16}
       />
     </View>
   );
@@ -74,8 +104,18 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     marginVertical: 5,
   },
-  sectionListContainer: {
+  Container: {
     paddingBottom: 100,
+  },
+  sectionListContainer: {
     backgroundColor: Colors.ItemsBackground,
+  },
+  stickyHeaderContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+    backgroundColor: 'white',
   },
 });
