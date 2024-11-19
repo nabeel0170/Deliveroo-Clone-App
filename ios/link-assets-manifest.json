@@ -1,0 +1,21 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/IBMPlexSans-Bold.ttf",
+      "sha1": "6c829b9e0904df3399e7ac03ee1bb1f72c2d5e52"
+    },
+    {
+      "path": "src/assets/fonts/IBMPlexSans-Regular.ttf",
+      "sha1": "8e18e19c963fd6b0895620010d1a4adbc2d2caf7"
+    },
+    {
+      "path": "src/assets/fonts/stratos-bold.otf",
+      "sha1": "fc015fb19f053363be759a5e1e8d44dd68632d00"
+    },
+    {
+      "path": "src/assets/fonts/stratosweb-regular.ttf",
+      "sha1": "9b6762507b7f0b43fa99f83ad701fa35ecdf443f"
+    }
+  ]
+}
